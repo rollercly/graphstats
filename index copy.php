@@ -32,31 +32,22 @@ admin_externalpage_setup('reporteventlists');
 
 require_login(); // Requiere que el usuario esté autenticado
 
-// $courseid = required_param('id', PARAM_INT); // Obtén el ID del curso de la URL
+$courseid = required_param('id', PARAM_INT); // Obtén el ID del curso de la URL
 
-// $context = context_course::instance($courseid); // Obtiene el contexto del curso
-$context = context_system::instance();
+$context = context_course::instance($courseid); // Obtiene el contexto del curso
 require_capability('moodle/course:viewparticipants', $context); // Verifica los permisos de acceso al curso
 
 $PAGE->set_context($context); // Establece el contexto de la página
 
-// $course = get_course($courseid); // Obtiene información del curso
-// $participants = get_enrolled_users($context); // Obtiene los usuarios inscritos en el curso
-
-//query usuarios matriculados en los cursos
-$sql = "SELECT c.fullname, COUNT(ue.id) AS total FROM 
-mdl_course AS c JOIN mdl_enrol AS en ON en.courseid = c.id 
-JOIN mdl_user_enrolments AS ue ON ue.enrolid = en.id 
-GROUP BY c.id ORDER BY c.fullname";
-
-$recmatriculaciones = $DB->get_records_sql($sql);
+$course = get_course($courseid); // Obtiene información del curso
+$participants = get_enrolled_users($context); // Obtiene los usuarios inscritos en el curso
 
 // Inicia la salida HTML
 echo $OUTPUT->header();
-echo '<h2>Número usuarios matriculados por curso</h2>';
+echo '<h2>Usuarios inscritos en '.$course->fullname.'</h2>';
 echo '<ul>';
-foreach ($recmatriculaciones as $recmatriculacion) {
-    echo '<li>'.$recmatriculacion->fullname.' '.$recmatriculacion->total.'</li>'; // Muestra el nombre completo del usuario
+foreach ($participants as $participant) {
+    echo '<li>'.$participant->firstname.' '.$participant->lastname.'</li>'; // Muestra el nombre completo del usuario
 }
 echo '</ul>';
 echo $OUTPUT->footer();
